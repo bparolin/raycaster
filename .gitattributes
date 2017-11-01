@@ -1,0 +1,7 @@
+*.md text
+*.h text
+*.cpp text
+
+*.pdf binary
+*.o binary
+

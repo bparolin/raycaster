@@ -15,7 +15,7 @@ class Scene {
 public:
   Scene(int screenWidth, int screenHeight);
   ~Scene();
-  void addCube(Vec3f leftDownPos, int size);
+  void addCube(Vec3f leftDownPos, int size, Vec3f color);
   void init();
   bool computeShadow(Ray r, int faceId);
   Vec3f raycast(Ray r, int bounce);

@@ -43,11 +43,11 @@ bool Quad::intersectPlane(const Ray& ray, Vec3f& inter) const {
 
   // nd must be negative, and not 0
   // if nd is positive, the ray and plane normals
-  /* point in the same direction. No intersection.
+  // point in the same direction. No intersection.
   if (nd >= 0.0f) {
     return false;
   }
-*/
+
   float t = (distance - pn) / nd;
 
   // t must be positive

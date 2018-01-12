@@ -9,7 +9,7 @@ Scene::Scene(int screenWidth, int screenHeight)
 
 Scene::~Scene() { }
 
-void Scene::addCube(Vec3f leftDownPos, int size) {
+void Scene::addCube(Vec3f leftDownPos, int size, Vec3f color) {
   Vec3f a(leftDownPos.x() + size, leftDownPos.y(), leftDownPos.z());
   Vec3f b(leftDownPos.x() + size, leftDownPos.y() + size, leftDownPos.z());
   Vec3f c(leftDownPos.x(), leftDownPos.y() + size, leftDownPos.z());
@@ -18,23 +18,23 @@ void Scene::addCube(Vec3f leftDownPos, int size) {
   Vec3f f(leftDownPos.x() + size, leftDownPos.y() + size, leftDownPos.z() + size);
   Vec3f g(leftDownPos.x(), leftDownPos.y() + size, leftDownPos.z() + size);
 
-  Mesh cube(Vec3f(1, 0, 0));
+  Mesh cube(color);
 
-  cube.addFace(Quad(leftDownPos, a, b, c));
+  cube.addFace(Quad(leftDownPos, c, b, a));
   cube.addFace(Quad(leftDownPos, a, e, d));
   cube.addFace(Quad(leftDownPos, d, g, c));
-  cube.addFace(Quad(a, e, f, b));
-  cube.addFace(Quad(c, b, f, g));
+  cube.addFace(Quad(a, b, f, e));
+  cube.addFace(Quad(c, g, f, b));
   cube.addFace(Quad(d, e, f, g));
 
   meshes_.push_back(cube);
 }
 
 void Scene::init() {
-  screenLeftDown_ = Vec3f(-screenWidth_ / 2, 0, 0);
-  light_ = Vec3f(200, 400, 200);
+  screenLeftDown_ = Vec3f(-screenWidth_ / 2, 0, 20);
+  light_ = Vec3f(200, 400, 20);
 
-  Vec3f cameraPos(0, 250, screenLeftDown_.z() + (screenHeight_ / (2 * std::tan(30))));
+  Vec3f cameraPos(0, 250, screenLeftDown_.z() + (screenWidth_ / std::tan(27)));
   camera_.init(cameraPos);
 
 
@@ -43,10 +43,11 @@ void Scene::init() {
   Vec3f b(screenWidth_, 0, 0);
   Vec3f c(screenWidth_, 0, 2 * screenHeight_);
   Vec3f d(-screenWidth_, 0, 2 * screenHeight_);
-  groundFloor.addFace(Quad(a, b, c, d));
+  groundFloor.addFace(Quad(a, d, c, b));
   meshes_.push_back(groundFloor);
 
-  addCube(Vec3f(50, 50, 50), 100);
+  addCube(Vec3f(50, 0, 50), 100, Vec3f(1, 0, 0));
+  addCube(Vec3f(-150, 0, 50), 100, Vec3f(0, 1, 0));
 }
 
 bool Scene::computeShadow(Ray r, int faceId) {
@@ -67,7 +68,7 @@ bool Scene::computeShadow(Ray r, int faceId) {
 }
 
 Vec3f Scene::raycast(Ray r, int bounce) {
-  if (bounce > 4) {
+  if (bounce > 3) {
     return Vec3f(0, 0, 0);
   }
 
@@ -111,25 +112,18 @@ Vec3f Scene::raycast(Ray r, int bounce) {
   if (nearestId == -1)
     return color;
 
-
-  float ka = 0.3;
-
   Vec3f lightDir = light_ - nearestInter;
   lightDir.normalize();
   Ray shadowRay(nearestInter, lightDir);
-  color = nearest.getColor();
-  if (computeShadow(shadowRay, nearestId) == true) {
-    color = color * ka;
+  if (computeShadow(shadowRay, nearestId) == false) {
+    color = nearest.getColor();
   }
 
-  float n = (nearestFace.getNormal() * 2) * r.getDirection();
-  Vec3f reflectDir = (nearestFace.getNormal() * n) - r.getDirection();
-  reflectDir.normalize();
+  Vec3f ref = r.getDirection() - nearestFace.getNormal() * 2 * (r.getDirection() * nearestFace.getNormal());
+  Ray reflect(nearestInter, ref);
+  Vec3f col = raycast(reflect, bounce + 1);
 
-  Ray reflect(nearestInter, reflectDir);
-//  color = color + raycast(reflect, bounce + 1);
-
-  return color;
+  return color + col * 0.35;
 }
 
 void Scene::draw() {

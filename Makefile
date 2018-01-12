@@ -7,6 +7,8 @@ BIN=${DIR_NAME}
 CXX=g++
 CXXFLAGS=-g
 
+LFLAGS=-lglut -lGL -lGLU
+
 SRC_DIR=./src
 SRC_EXT=cpp
 HDR_DIR=./include
@@ -29,7 +31,7 @@ all: dirs ${BIN_DIR}/${BIN}
 # Link the executable
 ${BIN_DIR}/${BIN}: ${OBJ}
 	@echo "Linking: $@"
-	@${CXX} ${OBJ} -o $@
+	@${CXX} $^ ${LFLAGS} -o $@
 
 # Objects compilation
 ${OBJ_DIR}/%.o: ${SRC_DIR}/%.${SRC_EXT}

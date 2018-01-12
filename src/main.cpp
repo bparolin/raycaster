@@ -18,30 +18,39 @@ transparence). Pour cela, écrire une opération permettant de choisir aléatoir
 direction  dans  un  cône  donné  (le  cône  est  défini  par  un  vecteur  de  direction  et  un angle).
 */
 
-#include "ray.h"
-#include "quad.h"
-#include <fstream>
-
 #include "scene.h"
 
-int main() {
-  Vec3f a(-100, -100, 0);
-  Vec3f b(100, -100, 0);
-  Vec3f c(100, 100, 0);
-  Vec3f d(-100, 100, 0);
-  Quad q(a, b,c, d);
+Scene* scene = NULL;
 
-  const int W = 500;
-  const int H = 500;
+void display() {
+  scene->draw();
+}
 
-  // Screen down left position
-  Vec3f s(-250, -250, -2);
+void keyboard(unsigned char keycode, int a, int b) {
+  // Press Echap to leave
+  if (keycode == 27) {
+    exit(EXIT_SUCCESS);
+  } else if (keycode == 'd') {
+    scene->draw();
+  }
+}
 
-  // Eye origin
-  Vec3f e(0, 0, -10);
+int main(int argc, char* argv[]) {
 
-  Scene scene(W, H, s, e);
-  scene.draw();
+  const int windowWidth = 500;
+  const int windowHeight = 500;
+
+  glutInit(&argc, argv);
+  glutInitWindowSize(windowWidth, windowHeight);
+  glutCreateWindow("Lancer de rayons");
+  gluOrtho2D(0.0, windowWidth, windowHeight, 0.0);
+
+  scene = new Scene(windowWidth, windowHeight);
+
+  glutDisplayFunc(display);
+  glutKeyboardFunc(keyboard);
+
+  glutMainLoop();
 
   return 0;
 }

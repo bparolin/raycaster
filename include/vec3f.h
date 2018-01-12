@@ -19,8 +19,10 @@ public:
     Vec3f& operator=(const Vec3f& v);
     bool operator>=(const float s) const;
     bool operator<=(const float s) const;
+    bool operator!=(const Vec3f& v) const;
     friend std::ostream& operator<<(std::ostream& os, const Vec3f& v);
-    Vec3f project(Vec3f v) const;
+    Vec3f project(const Vec3f& v) const;
+    void normalize();
     const float& x() const;
     const float& y() const;
     const float& z() const;

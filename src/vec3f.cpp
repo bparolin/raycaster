@@ -75,14 +75,30 @@ bool Vec3f::operator<=(const float s) const {
     return false;
 }
 
+bool Vec3f::operator!=(const Vec3f& v) const {
+  if (this->x_ != v.x_ && this->y_ != v.y_ && this->z_ != v.z_)
+    return true;
+  else
+    return false;
+}
+
 std::ostream& operator<<(std::ostream& os, const Vec3f& v) {
   return os << v.x_ << " " << v.y_ << " " << v.z_;
 }
 
-Vec3f Vec3f::project(Vec3f v) const {
-  float dot = *this * v;
+Vec3f Vec3f::project(const Vec3f& v) const {
+  float dot = (*this) * v;
   float square = v * v;
   return v * (dot / square);
+}
+
+void Vec3f::normalize() {
+  float normSq = (*this) * (*this);
+  float norm = std::sqrt(normSq);
+
+  x_ /= norm;
+  y_ /= norm;
+  z_ /= norm;
 }
 
 const float& Vec3f::x() const {

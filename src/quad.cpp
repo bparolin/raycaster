@@ -15,6 +15,11 @@ void Quad::calculateNormal() {
     Vec3f U = edges_[1] - edges_[0];
     Vec3f V = edges_[3] - edges_[0];
     normal_ = U ^ V;
+    normal_.normalize();
+}
+
+Vec3f Quad::getNormal() {
+  return normal_;
 }
 
 bool Quad::intersect(const Ray& ray, Vec3f& inter) const {

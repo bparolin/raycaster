@@ -46,7 +46,7 @@ void Scene::init() {
   groundFloor.addFace(Quad(a, b, c, d));
   meshes_.push_back(groundFloor);
 
-  addCube(Vec3f(50, 0, 50), 100);
+  addCube(Vec3f(50, 50, 50), 100);
 }
 
 bool Scene::computeShadow(Ray r, int faceId) {
@@ -107,17 +107,27 @@ Vec3f Scene::raycast(Ray r, int bounce) {
     }
   }
 
+  // No Intersection
+  if (nearestId == -1)
+    return color;
+
+
+  float ka = 0.3;
+
   Vec3f lightDir = light_ - nearestInter;
+  lightDir.normalize();
   Ray shadowRay(nearestInter, lightDir);
-  if (computeShadow(shadowRay, nearestId) == false) {
-    color = nearest.getColor();
+  color = nearest.getColor();
+  if (computeShadow(shadowRay, nearestId) == true) {
+    color = color * ka;
   }
-  Vec3f inverseDir = r.getOrigin() - nearestInter;
-  inverseDir.normalize();
-  Vec3f reflectDir = (nearestFace.getNormal() * ((nearestFace.getNormal() * 2) * inverseDir)) - inverseDir;
+
+  float n = (nearestFace.getNormal() * 2) * r.getDirection();
+  Vec3f reflectDir = (nearestFace.getNormal() * n) - r.getDirection();
   reflectDir.normalize();
+
   Ray reflect(nearestInter, reflectDir);
-  //color = color + raycast(reflect, bounce + 1);
+//  color = color + raycast(reflect, bounce + 1);
 
   return color;
 }
@@ -134,6 +144,7 @@ void Scene::draw() {
 
       // Compute ray direction
       Vec3f dir = v - camera_.getPosition();
+      dir.normalize();
       Ray r(camera_.getPosition(), dir);
       Vec3f color = raycast(r, 0);
       glBegin(GL_POINTS);
@@ -145,5 +156,4 @@ void Scene::draw() {
 
   glFlush();
 }
-
 

@@ -37,8 +37,8 @@ void keyboard(unsigned char keycode, int a, int b) {
 
 int main(int argc, char* argv[]) {
 
-  const int windowWidth = 500;
-  const int windowHeight = 500;
+  const int windowWidth = 1000;
+  const int windowHeight = 1000;
 
   glutInit(&argc, argv);
   glutInitWindowSize(windowWidth, windowHeight);
